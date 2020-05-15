@@ -1,64 +1,20 @@
 package com.ypz.killetom.basedevsdkui.ui.widget.opengl.v20
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.opengl.GLES20
-import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import com.ypz.killetom.basedevsdk.tools.KTBlurTools
 import com.ypz.killetom.basedevsdkui.ui.widget.opengl.KTBluerData
-import com.ypz.killetom.basedevsdkui.ui.widget.opengl.RenderBuildException
-import com.ypz.killetom.libktsupportgles.KTGLHelperTools
-import com.ypz.killetom.libktsupportgles.KTGLShareProgramCode
+import com.ypz.killetom.basedevsdkui.ui.widget.opengl.KTBluerSupportRender
+import com.ypz.killetom.basedevsdkui.ui.widget.opengl.v30.KTV30BlurRender
 import com.ypz.killetom.libktsupportgles.KTTextureBean
-import com.ypz.killetom.libktsupportgles.v20.KTGLV20SupperRender
-import java.util.concurrent.locks.ReentrantReadWriteLock
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
-class KTBlurRender private constructor(val context: Context) : KTGLV20SupperRender() {
+class KTV20BlurRender internal constructor(val context: Context) : KTBluerSupportRender(context) {
 
-    private val lock = ReentrantReadWriteLock()
-
-    private val blurVertexShaderCode = KTGLShareProgramCode.KT_VERTEX_2D_SHADER
-    private val blurFragmentShaderCode = KTGLShareProgramCode.KT_FRAGMENT_2D_SHADER
-
-    private val TEX_VERTEX_COMPONENT_COUNT = 2
-    private val POSITION_COMPONENT_COUNT = 3
-
-    private var uTextureUnitLocation: Int = 0
-    private var mAPositionLocation: Int = 0
-
-    private val texturePoint = floatArrayOf(
-        0f, 0f,
-        0f, 1f,
-        1f, 1f,
-        1f, 0f
-    )
-    private val BluerexVertexBuffer = KTGLHelperTools.createFloatBuffer(texturePoint)
-
-    //x[-1,1]  y[-1,1]  L(-1)->R(1) T(1)->B(-1)
-    private val bluerPoint = floatArrayOf(
-        -1f, +1f, 0f,  //左上
-        -1f, -1f, 0f,  //左下
-        +1f, -1f, 0f,  //右下
-        +1f, +1f, 0f //右上
-    )
-    private val bluerBuffer = KTGLHelperTools.createFloatBuffer(bluerPoint)
-
-
-    private val mMVPMatrix = FloatArray(16)
-    private val mProjectionMatrix = FloatArray(16)
-    private val mViewMatrix = FloatArray(16)
-
-    private var bluerData: KTBluerData? = null
-    private var textureBean: KTTextureBean? = null
-
-    //    private val
-
-    private val mainProgramTarget = "${this::class.java.simpleName}_MAIN"
 
     private fun initMatrix() {
 
@@ -70,7 +26,6 @@ class KTBlurRender private constructor(val context: Context) : KTGLV20SupperRend
             GLES20.glUniformMatrix4fv(uMatrixLocation, 1, false, mProjectionMatrix, 0)
 
         }
-
     }
 
     fun destory() {
@@ -159,7 +114,7 @@ class KTBlurRender private constructor(val context: Context) : KTGLV20SupperRend
 
         GLES20.glEnableVertexAttribArray(aTexCoordLocation)
 
-        GLES20.glClearColor(0f, 0f, 0f, 1f)
+        GLES20.glClearColor(255f, 255f, 255f, 1f)
         // 开启纹理透明混合，这样才能绘制透明图片
         GLES20.glEnable(GLES20.GL_BLEND)
         GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA)
@@ -167,63 +122,22 @@ class KTBlurRender private constructor(val context: Context) : KTGLV20SupperRend
     }
 
 
-    class Builder internal constructor(val context: Context) {
-
-        private var originBitmap: Bitmap? = null
-
-        private var bluerWay: KTBlurTools.BlueWay = KTBlurTools.BlueWay.RenderScript
-
-        private var scale = 0.75f
-
-        private var radius = 10
-
-        fun build(): KTBlurRender {
-
-            val bitmap = originBitmap ?: throw RenderBuildException("origin bitmap null")
-
-            if (bitmap.isRecycled)
-                throw RenderBuildException("origin bitmap already recycled")
-
-            val render = KTBlurRender(context)
-
-            val bluerData = KTBluerData(bluerWay, bitmap, scale, radius)
-
-            render.setBluerData(bluerData)
-
-            return render
-        }
-
-        fun setOriginBitmap(init: Builder.() -> Bitmap): Builder = apply {
-            originBitmap = init()
-        }
-
-        fun setBlurWay(init: Builder.() -> KTBlurTools.BlueWay): Builder = apply {
-            bluerWay = init()
-        }
-
-        fun setScale(init: Builder.() -> Float): Builder = apply {
-            scale = init()
-        }
-
-        fun setRadius(init: Builder.() -> Int): Builder = apply {
-            radius = init()
-        }
-
-
-    }
-
-    private fun setBluerData(bluerData: KTBluerData) {
-
-        lock.write {
-            this.bluerData = bluerData
-        }
-    }
-
-
     companion object {
 
-        fun getBuilder(context: Context): Builder {
-            return Builder(context)
+        fun getBuilder(context: Context): Builder<KTV20BlurRender> {
+
+            val builder = object : Builder<KTV20BlurRender>(context) {
+
+                override fun buildByData(bluerData: KTBluerData): KTV20BlurRender {
+
+                    return KTV20BlurRender(context).apply {
+                        applyBluerData(bluerData)
+                    }
+                }
+            }
+
+            return builder
+
         }
     }
 }

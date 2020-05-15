@@ -1,5 +1,7 @@
 package com.ypz.killetom.libktsupportgles
 
+import android.app.ActivityManager
+import android.content.Context
 import android.opengl.GLSurfaceView
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -51,6 +53,29 @@ object KTGLHelperTools {
         return buffer
     }
 
+    fun init(
+        glSurfaceView: GLSurfaceView,
+        renderer: GLSurfaceView.Renderer,
+        renderMode: Int = GLSurfaceView.RENDERMODE_WHEN_DIRTY
+    ) {
+
+        val context = glSurfaceView.context
+
+        val activityManager =
+            context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+
+        val info = activityManager.deviceConfigurationInfo
+
+        val version = info.reqGlEsVersion
+
+        if (version >= 0x30000) {
+            initV30(glSurfaceView, renderer, renderMode)
+        } else {
+            initV20(glSurfaceView, renderer, renderMode)
+        }
+
+    }
+
     fun initV20(
         glSurfaceView: GLSurfaceView,
         renderer: GLSurfaceView.Renderer,
@@ -69,7 +94,7 @@ object KTGLHelperTools {
     ) {
 
         glSurfaceView.setEGLContextClientVersion(3)
-        glSurfaceView.renderMode = renderMode
         glSurfaceView.setRenderer(renderer)
+        glSurfaceView.renderMode = renderMode
     }
 }
