@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="maxScore" format="float" />
+    <attr name="hierarchyCount" format="integer" />
+    <attr name="angleCount" format="integer" />
+    <attr name="spiderStrokeWidth" format="dimension" />
+    <attr name="scoreStrokeWidth" format="dimension" />
+    <attr name="spiderStokeBg" format="color" />
+    <attr name="spiderBg" format="color" />
+    <attr name="scoreBg" format="color" />
+    <attr name="scoreStokeBg" format="color" />
+    <attr name="isSpiderBg" format="boolean" />
+    <attr name="isScoreBg" format="boolean" />
+    <attr name="isSpiderStroke" format="boolean" />
+    <attr name="isScoreStroke" format="boolean" />
+    <attr name="isComplexOffset" format="boolean" />
+    <attr name="isGradientSpider" format="boolean" />
+    <attr name="spiderEndBg" format="color" />
+
+    <declare-styleable name="EthanSpiderWeb">
+        <attr name="maxScore" />
+        <attr name="hierarchyCount" />
+        <attr name="angleCount" />
+        <attr name="spiderStrokeWidth" />
+        <attr name="scoreStrokeWidth" />
+        <attr name="spiderStokeBg" />
+        <attr name="spiderBg" />
+        <attr name="spiderEndBg" />
+        <attr name="scoreBg" />
+        <attr name="scoreStokeBg" />
+        <attr name="isSpiderBg" />
+        <attr name="isScoreBg" />
+        <attr name="isSpiderStroke" />
+        <attr name="isScoreStroke" />
+        <attr name="isComplexOffset" />
+        <attr name="isGradientSpider" />
+    </declare-styleable>
+
+    <declare-styleable name="SpiderWebLayout">
+        <attr name="isBuildInSpider" format="boolean" />
+        <attr name="spiderMargin" format="dimension" />
+        <attr name="maxScore" />
+        <attr name="hierarchyCount" />
+        <attr name="angleCount" />
+        <attr name="spiderStrokeWidth" />
+        <attr name="scoreStrokeWidth" />
+        <attr name="spiderStokeBg" />
+        <attr name="spiderBg" />
+        <attr name="spiderEndBg" />
+        <attr name="scoreBg" />
+        <attr name="scoreStokeBg" />
+        <attr name="isSpiderBg" />
+        <attr name="isScoreBg" />
+        <attr name="isSpiderStroke" />
+        <attr name="isScoreStroke" />
+        <attr name="isComplexOffset" />
+        <attr name="isGradientSpider" />
+    </declare-styleable>
+
+
+
+</resources>

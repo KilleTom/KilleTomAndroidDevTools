@@ -1,0 +1,5 @@
+rootProject.name='KilleTomEasyAndroidDevTools'
+include ':app'
+include ':libKTBaseDev'
+include ':libKTBaseUI'
+include ':libKTSupportGLES'
