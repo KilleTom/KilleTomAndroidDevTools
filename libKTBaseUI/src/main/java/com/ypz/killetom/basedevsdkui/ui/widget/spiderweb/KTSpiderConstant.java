@@ -3,7 +3,7 @@ package com.ypz.killetom.basedevsdkui.ui.widget.spiderweb;
 
 import com.ypz.killetom.basedevsdkui.R;
 
-public class RxSpiderConstant {
+public class KTSpiderConstant {
     public final static int angleCount = 5;
     public final static int hierarchyCount = 5;
     public final static float maxScore = 10f;
