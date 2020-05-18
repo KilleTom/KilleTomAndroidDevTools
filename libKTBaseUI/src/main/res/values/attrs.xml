@@ -36,8 +36,8 @@
         <attr name="isComplexOffset" />
         <attr name="isGradientSpider" />
     </declare-styleable>
-
-    <declare-styleable name="SpiderWebLayout">
+    
+    <declare-styleable name="KTSpiderWebLayout">
         <attr name="isBuildInSpider" format="boolean" />
         <attr name="spiderMargin" format="dimension" />
         <attr name="maxScore" />
@@ -57,7 +57,5 @@
         <attr name="isComplexOffset" />
         <attr name="isGradientSpider" />
     </declare-styleable>
-
-
 
 </resources>

@@ -77,118 +77,145 @@ class KTSpiderWeb @JvmOverloads constructor(
     private var centerX = 0f
     private var centerY = 0f
 
+    private lateinit var lock: ReentrantReadWriteLock
 
-    private val lock = ReentrantReadWriteLock()
 
-    private val drawData = DrawData()
+    private lateinit var drawData: DrawData
 
     override fun initAttr(context: Context, attrs: AttributeSet?) {
 
+        lock = ReentrantReadWriteLock()
+
         lock.write {
 
+            drawData = DrawData()
+
             if (attrs != null) {
+
                 val typedArray =
                     context.obtainStyledAttributes(attrs, R.styleable.KTSpiderWeb)
-                isComplexOffset = typedArray.getBoolean(
-                    R.styleable.KTSpiderWeb_isComplexOffset,
-                    KTSpiderConstant.isComplexOffset
-                )
-                isSpiderBg = typedArray.getBoolean(
-                    R.styleable.KTSpiderWeb_isSpiderBg,
-                    KTSpiderConstant.isSpiderBg
-                )
-                isSpiderStroke = typedArray.getBoolean(
-                    R.styleable.KTSpiderWeb_isSpiderStroke,
-                    KTSpiderConstant.isSpiderStroke
-                )
-                isScoreBg = typedArray.getBoolean(
-                    R.styleable.KTSpiderWeb_isScoreBg,
-                    KTSpiderConstant.isScoreBg
-                )
-                isScoreStroke = typedArray.getBoolean(
-                    R.styleable.KTSpiderWeb_isScoreStroke,
-                    KTSpiderConstant.isScoreStroke
-                )
-                setAngleCount(
+
+                isComplexOffset =
+                    typedArray.getBoolean(
+                        R.styleable.KTSpiderWeb_isComplexOffset,
+                        KTSpiderConstant.isComplexOffset
+                    )
+
+                isSpiderBg =
+                    typedArray.getBoolean(
+                        R.styleable.KTSpiderWeb_isSpiderBg,
+                        KTSpiderConstant.isSpiderBg
+                    )
+
+                isSpiderStroke =
+                    typedArray.getBoolean(
+                        R.styleable.KTSpiderWeb_isSpiderStroke,
+                        KTSpiderConstant.isSpiderStroke
+                    )
+
+                isScoreBg =
+                    typedArray.getBoolean(
+                        R.styleable.KTSpiderWeb_isScoreBg,
+                        KTSpiderConstant.isScoreBg
+                    )
+
+                isScoreStroke =
+                    typedArray.getBoolean(
+                        R.styleable.KTSpiderWeb_isScoreStroke,
+                        KTSpiderConstant.isScoreStroke
+                    )
+
+                angleCount =
                     typedArray.getInt(
                         R.styleable.KTSpiderWeb_angleCount,
                         KTSpiderConstant.angleCount
                     )
-                )
-                setHierarchyCount(
+
+                hierarchyCount =
                     typedArray.getInt(
                         R.styleable.KTSpiderWeb_hierarchyCount,
                         KTSpiderConstant.hierarchyCount
                     )
-                )
-                setMaxScore(typedArray.getFloat(R.styleable.KTSpiderWeb_maxScore, maxScore))
+
+                maxScore = typedArray.getFloat(R.styleable.KTSpiderWeb_maxScore, maxScore)
+
                 if (isSpiderBg) {
-                    spiderColor = typedArray.getResourceId(
-                        R.styleable.KTSpiderWeb_spiderBg,
-                        KTSpiderConstant.spiderColor
-                    )
-                    setSpiderColor(spiderColor)
+
+                    spiderColor =
+                        typedArray.getResourceId(
+                            R.styleable.KTSpiderWeb_spiderBg,
+                            KTSpiderConstant.spiderColor
+                        )
+
                 }
-                isGradientSpider = typedArray.getBoolean(
-                    R.styleable.KTSpiderWeb_isGradientSpider,
-                    KTSpiderConstant.isGradientSpider
-                )
+
+                isGradientSpider =
+                    typedArray.getBoolean(
+                        R.styleable.KTSpiderWeb_isGradientSpider,
+                        KTSpiderConstant.isGradientSpider
+                    )
+
                 if (isGradientSpider) {
-                    spiderColor = typedArray.getResourceId(
-                        R.styleable.KTSpiderWeb_spiderBg,
-                        KTSpiderConstant.spiderColor
-                    )
-                    spiderEndColor = typedArray.getResourceId(
-                        R.styleable.KTSpiderWeb_spiderEndBg,
-                        KTSpiderConstant.spiderEndColor
-                    )
+                    spiderColor =
+                        typedArray.getResourceId(
+                            R.styleable.KTSpiderWeb_spiderBg,
+                            KTSpiderConstant.spiderColor
+                        )
+
+                    spiderEndColor =
+                        typedArray.getResourceId(
+                            R.styleable.KTSpiderWeb_spiderEndBg,
+                            KTSpiderConstant.spiderEndColor
+                        )
+
                     resetGradientSpiderColors()
                 }
+
                 if (isSpiderStroke) {
-                    setSpiderStrokeWidth(
-                        typedArray.getDimension(
-                            R.styleable.KTSpiderWeb_spiderStrokeWidth,
-                            10f
-                        )
-                    )
-                    setSpiderStrokeColor(
+
+                    spiderStrokeWidth =
+                        typedArray.getDimension(R.styleable.KTSpiderWeb_spiderStrokeWidth, 10f)
+
+                    spiderStrokeColor =
                         typedArray.getResourceId(
                             R.styleable.KTSpiderWeb_spiderStokeBg,
                             KTSpiderConstant.spiderStrokeColor
                         )
-                    )
+
                 }
-                if (isScoreBg) setScoreColor(
-                    typedArray.getResourceId(
-                        R.styleable.KTSpiderWeb_scoreBg,
-                        KTSpiderConstant.scoreColor
-                    )
-                )
-                if (isScoreStroke) {
-                    setScoreStrokeWidth(
-                        typedArray.getDimension(
-                            R.styleable.KTSpiderWeb_spiderStrokeWidth,
-                            10f
+                if (isScoreBg) {
+                    scoreColor =
+                        typedArray.getResourceId(
+                            R.styleable.KTSpiderWeb_scoreBg,
+                            KTSpiderConstant.scoreColor
                         )
-                    )
-                    setScoreStrokeColor(
+                }
+
+                if (isScoreStroke) {
+
+                    scoreStrokeWidth =
+                        typedArray.getDimension(R.styleable.KTSpiderWeb_spiderStrokeWidth, 10f)
+
+                    scoreStrokeColor =
                         typedArray.getResourceId(
                             R.styleable.KTSpiderWeb_scoreStokeBg,
                             KTSpiderConstant.scoreStrokeColor
                         )
-                    )
+
                 }
+
                 typedArray.recycle()
-            } else {
-                resetScoreStrokePaint()
-                resetSpiderStrokePaint()
-                resetSpiderBgPaint()
-                resetScoreBgPaint()
             }
+
+            resetScoreStrokePaint()
+            resetSpiderStrokePaint()
+            resetSpiderBgPaint()
+            resetScoreBgPaint()
+
+            resetAngle()
 
             initDrawData()
         }
-
     }
 
     //--------------------------初始化渲染元素的设置例如画笔线框背景等等---------------------------------
@@ -268,7 +295,7 @@ class KTSpiderWeb @JvmOverloads constructor(
                 Log.i("ypz", "error" + e.message)
             }
         }
-        invalidate()
+
     }
 
     fun setScoreStroke(scoreStroke: Boolean) {
@@ -513,12 +540,20 @@ class KTSpiderWeb @JvmOverloads constructor(
                 return
 
             this.angleCount = angleCount
-            averageAngle = 360 / angleCount.toFloat()
-            offsetAngle = if (isComplexOffset) averageAngle / 2 else 0f
+
+            resetAngle()
 
             initDrawData()
+
         }
         invalidate()
+    }
+
+    private fun resetAngle() {
+
+        averageAngle = 360 / angleCount.toFloat()
+
+        offsetAngle = if (isComplexOffset) averageAngle / 2 else 0f
     }
 
     fun getAngleCount(): Int {
@@ -685,7 +720,6 @@ class KTSpiderWeb @JvmOverloads constructor(
         }
 
 
-
         return paths
     }
 
@@ -742,10 +776,13 @@ class KTSpiderWeb @JvmOverloads constructor(
                 (centerX + Math.sin(nextRadians.toDouble()) * currentRadius).toFloat()
             nextPointY =
                 (centerY - Math.cos(nextRadians.toDouble()) * currentRadius).toFloat()
-            if (position == 0) path.moveTo(nextPointX, nextPointY) else path.lineTo(
-                nextPointX,
-                nextPointY
-            )
+
+            if (position == 0) {
+                path.moveTo(nextPointX, nextPointY)
+            } else {
+                path.lineTo(nextPointX, nextPointY)
+            }
+
         }
         path.close()
         return path
@@ -773,11 +810,16 @@ class KTSpiderWeb @JvmOverloads constructor(
 
         lock.read {
 
-            if (drawData.bgPath.isEmpty())
+            val paths = drawData.bgPath
+
+            if (paths.isEmpty())
                 return
 
-            drawData.bgPath.forEachIndexed { index, path ->
-                paintSetColor(spiderBgPaint, gradientSpiderColors[index])
+            val lastIndex = paths.lastIndex
+
+            paths.forEachIndexed { index, path ->
+                val drawIndex = lastIndex - index
+                paintSetColor(spiderBgPaint, gradientSpiderColors[drawIndex])
                 canvas.drawPath(path, spiderBgPaint!!)
             }
 
