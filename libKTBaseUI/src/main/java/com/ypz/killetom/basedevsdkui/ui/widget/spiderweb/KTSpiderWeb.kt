@@ -14,6 +14,8 @@ import com.ypz.killetom.basedevsdkui.ui.widget.base.BaseView
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
+import kotlin.math.cos
+import kotlin.math.sin
 
 class KTSpiderWeb @JvmOverloads constructor(
     context: Context?,
@@ -678,7 +680,17 @@ class KTSpiderWeb @JvmOverloads constructor(
     private fun getStrokePath(): ArrayList<Path> {
 
         val paths = ArrayList<Path>()
-        val bgStrokePath = getBgPath()
+
+        val averageRadius = radius / hierarchyCount
+
+        for (index in hierarchyCount downTo 1) {
+
+            val radius = averageRadius * index
+
+            paths.add(getRadiusWebPath(radius))
+
+        }
+
         val strokeTopPath = Path()
 
         for (position in 0 until angleCount) {
@@ -700,7 +712,6 @@ class KTSpiderWeb @JvmOverloads constructor(
 
         strokeTopPath.close()
 
-        paths.addAll(bgStrokePath)
         paths.add(strokeTopPath)
 
         return paths
@@ -715,10 +726,11 @@ class KTSpiderWeb @JvmOverloads constructor(
 
             val radius = averageRadius * index
 
-            paths.add(hierarchyByRadiusPath(radius))
+            val nextRadius = averageRadius * (index - 1)
+
+            paths.add(getRadiusRanaglePath(radius, nextRadius))
 
         }
-
 
         return paths
     }
@@ -760,31 +772,59 @@ class KTSpiderWeb @JvmOverloads constructor(
         }
     }
 
+    private fun getRadiusWebPath(currentRadius: Float): Path {
+
+        val path = Path()
+
+        for (position in 0 until angleCount * 2) {
+            val nextAngle = offsetAngle + position * averageAngle
+            val nextRadians = Math.toRadians(nextAngle.toDouble()).toFloat()
+            val nextPointX = (centerX + Math.sin(nextRadians.toDouble()) * currentRadius).toFloat()
+            val nextPointY =
+                (centerY - Math.cos(nextRadians.toDouble()) * currentRadius).toFloat()
+
+            if (position == 0 || position == angleCount) {
+                path.moveTo(nextPointX, nextPointY)
+            } else {
+                path.lineTo(nextPointX, nextPointY)
+            }
+        }
+
+        path.close()
+
+        return path
+    }
+
     /**
      * 返回每一层蜘蛛网的path路径
      */
-    private fun hierarchyByRadiusPath(currentRadius: Float): Path {
-        val path = Path()
-        var nextAngle: Float
-        var nextRadians: Float
-        var nextPointX: Float
-        var nextPointY: Float
-        for (position in 0 until angleCount) {
-            nextAngle = offsetAngle + position * averageAngle
-            nextRadians = Math.toRadians(nextAngle.toDouble()).toFloat()
-            nextPointX =
-                (centerX + Math.sin(nextRadians.toDouble()) * currentRadius).toFloat()
-            nextPointY =
-                (centerY - Math.cos(nextRadians.toDouble()) * currentRadius).toFloat()
+    private fun getRadiusRanaglePath(currentRadius: Float, nextRadius: Float): Path {
 
-            if (position == 0) {
+        val path = Path()
+
+        for (position in 0 until angleCount * 2) {
+
+            var radius = currentRadius
+
+            if (position == angleCount) {
+                radius = nextRadius
+            }
+
+            val nextAngle = offsetAngle + position * averageAngle
+            val nextRadians = Math.toRadians(nextAngle.toDouble()).toFloat()
+            val nextPointX = (centerX + sin(nextRadians.toDouble()) * radius).toFloat()
+            val nextPointY = (centerY - cos(nextRadians.toDouble()) * radius).toFloat()
+
+            if (position == 0 || position == angleCount) {
                 path.moveTo(nextPointX, nextPointY)
             } else {
                 path.lineTo(nextPointX, nextPointY)
             }
 
         }
+
         path.close()
+
         return path
     }
 
@@ -837,6 +877,7 @@ class KTSpiderWeb @JvmOverloads constructor(
             val paint = spiderStrokePaint ?: return
 
             drawData.strokePath.forEach { path -> canvas.drawPath(path, paint) }
+
         }
     }
 

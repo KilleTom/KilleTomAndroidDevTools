@@ -320,6 +320,10 @@ class KTSpiderWebLayout : BaseViewGroup {
      * @return 方位
      */
     private fun calculateLocationByAngle(angle: Float): Int {
+
+        //一个圆形理论角度范围是[0.360] 取余是保证在[0,360]范围内
+        val angle = angle % 360
+
         return if (angle in 337.5f..360f || angle in 0f..22.5f) {
             KTSpiderConstant.LOCATION_NORTH
         } else if (angle in 22.5f..67.5f) {
